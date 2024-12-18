@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jack Burleson - Professional Timeline</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --border-color: #e9ecef;
+            --hover-color: #2980b9;
+            --timeline-width: 3px;
+            --header-height: 80px;
+            --footer-height: 100px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+
+        .timeline-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background-color: var(--secondary-color);
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: var(--timeline-width);
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+
+        .timeline-item {
+            width: 100%;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-content {
+            position: relative;
+            width: calc(50% - 30px);
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: auto;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        .timeline-date {
+            font-size: 0.9em;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .timeline-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .timeline-company {
+            font-size: 1em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .timeline-description {
+            margin-bottom: 15px;
+        }
+
+        .timeline-description ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .timeline-description li {
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .timeline-description li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+        }
+
+        .timeline-details {
+            font-size: 0.9em;
+            color: #666;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-content {
+                width: calc(100% - 60px);
+                margin-left: 60px !important;
+            }
+
+            .timeline-icon {
+                left: 30px;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-btn {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .timeline-item {
+                transition: none;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary-color: #2c3e50;
+                --secondary-color: #3498db;
+                --background-color: #1a1a1a;
+                --text-color: #ffffff;
+                --border-color: #333333;
+            }
+
+            .timeline-content {
+                background: #2c2c2c;
+            }
+
+            .timeline-icon {
+                background: #2c2c2c;
+            }
+        }
+
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-info h1 {
+            font-size: 1.8em;
+            margin: 0;
+        }
+
+        .profile-info p {
+            margin: 5px 0 0;
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .social-link {
+            color: white;
+            font-size: 1.5em;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-info {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .footer-links i {
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .header, .footer {
+                background: #1a1a1a;
+            }
+
+            .social-link:hover,
+            .footer-links a:hover {
+                color: var(--secondary-color);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="profile-info">
+                <h1>Jack Burleson</h1>
+                <p>Cognitive Neuroscience Researcher & Psychology Student</p>
+            </div>
+            <div class="social-links">
+                <a href="http://github.com/Exios66" class="social-link" target="_blank" rel="noopener" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="http://linkedin.com/in/jackjburleson" class="social-link" target="_blank" rel="noopener" title="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://profile.indeed.com/?hl=en_US&co=US&from=gnav-homepage" class="social-link" target="_blank" rel="noopener" title="Indeed">
+                    <i class="fas fa-briefcase"></i>
+                </a>
+                <a href="mailto:exios4@protonmail.com" class="social-link" title="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="timeline-container">
+        <div class="filters" id="filters">
+            <!-- Filters will be dynamically added here -->
+        </div>
+        <div class="timeline" id="timeline">
+            <!-- Timeline items will be dynamically added here -->
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Contact Information</h3>
+                <p>Feel free to reach out for collaborations or opportunities</p>
+            </div>
+            <div class="footer-links">
+                <a href="http://github.com/Exios66" target="_blank" rel="noopener">
+                    <i class="fab fa-github"></i>
+                    GitHub
+                </a>
+                <a href="http://linkedin.com/in/jackjburleson" target="_blank" rel="noopener">
+                    <i class="fab fa-linkedin"></i>
+                    LinkedIn
+                </a>
+                <a href="https://profile.indeed.com/?hl=en_US&co=US&from=gnav-homepage" target="_blank" rel="noopener">
+                    <i class="fas fa-briefcase"></i>
+                    Indeed Profile
+                </a>
+                <a href="mailto:exios4@protonmail.com">
+                    <i class="fas fa-envelope"></i>
+                    Email
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Career data
+        const careerData = [
+            // RESEARCH & COURSEWORK
+            {
+                type: 'research',
+                title: 'Undergraduate Researcher',
+                company: 'University of Wisconsin-Parkside, Cognitive Neuroscience Lab',
+                period: 'June 2024 - Present',
+                description: [
+                    'Investigated cognitive load and its impact on mental performance in independent research projects.',
+                    'Utilized EEG for brain activity measurement, including preprocessing, artifact correction, statistical analysis, and dissemination.',
+                    'Assisted in experimental study protocols, data collection, and analysis.',
+                    'Prepared IRB approvals and submissions for experimental procedures and conferences.'
+                ],
+                icon: '🔬',
+                details: 'Developed experimental protocols, conducted EEG analysis, and participated in all aspects of human subjects research while ensuring ethical compliance and professional standards.'
+            },
+            {
+                type: 'research',
+                title: 'Independent Research Study (PSYC 499)',
+                company: 'University of Wisconsin-Parkside, Cognitive Neuroscience Lab',
+                period: 'September 2024 - Present',
+                description: [
+                    'Conducted multimodal data collection with high-density EEG, eye-tracking, and physiological measures.',
+                    'Designed experiments manipulating AI chatbot profiles to analyze information accuracy and cognitive load.',
+                    'Assessed cognitive load markers like theta activity, pupillary dilation, and visual saccades.',
+                    'Employed machine-learning techniques and neural mapping for pattern recognition.'
+                ],
+                icon: '🔬',
+                details: 'Focused on cognitive load dynamics, neural markers for information validation, and actionable insights for AI interface improvements.'
+            },
+            {
+                type: 'coursework',
+                title: 'Psychological Research Seminar (PSYC 492)',
+                company: 'University of Wisconsin-Parkside',
+                period: 'September 2024 - January 2025',
+                description: [
+                    'Developed surveys combining quantitative scales and qualitative open-ended questions for media literacy studies.',
+                    'Utilized TF-IDF techniques and k-means clustering for pattern recognition in qualitative responses.',
+                    'Measured political psychology concepts like political efficacy and media perceptions.',
+                    'Examined third-person effects, propaganda interpretation, and credibility evaluations.'
+                ],
+                icon: '📚',
+                details: 'Connected political psychology with media studies to address contemporary misinformation issues, combining quantitative and qualitative methodologies.'
+            },
+            {
+                type: 'publications',
+                title: 'In-Progress Research Publications',
+                company: 'University of Wisconsin-Parkside',
+                period: '2025 (Expected)',
+                description: [
+                    'Burleson, J., & Gregg, M. "Neural and Physiological Correlates of Information Verification in Human-AI Interactions." Target journal: Frontiers in Computational Neuroscience',
+                    'Submitted to Midwestern Psychological Association (MPA) & Madison\'s Research in the Rotunda',
+                    'Focus on multimodal analysis of cognitive and physiological responses to cognitive workload'
+                ],
+                icon: '📝',
+                details: 'Anticipating outcomes that enhance human-AI interaction design and usability, contributing significantly to cognitive neuroscience.'
+            },
+
+            // WORK EXPERIENCE
+            {
+                type: 'work',
+                title: 'Inbound & Outbound Distribution Coordinator',
+                company: 'Meijer Logistics & Distribution Center',
+                period: 'July 2020 - Present',
+                description: [
+                    'Managed multi-million dollar inventory, ensuring <1% margin of error across loading and distribution.',
+                    'Coordinated workflows in inventory management, order fulfillment, and transportation.',
+                    'Developed resilience, time management, and independent thinking by balancing full-time work with academic commitments.'
+                ],
+                icon: '📦',
+                details: `
+                    Applicable Skills:
+                    - Logistics Management, Supply Chain Management, Workplace Safety.
+                    - Project Management, Resource Allocation, and Leadership.
+                    - Critical Thinking, Forklift Training, Analytical Skills, and Cloud Applications.`
+            },
+            {
+                type: 'work',
+                title: 'Shift Team Lead',
+                company: 'Dunkin Donuts Inc.',
+                period: 'January 2018 - April 2020',
+                description: [
+                    'Independently managed store operations, overseeing daily revenue up to $100,000.',
+                    'Reduced waste by 7% through optimized inventory and scheduling.',
+                    'Performed audits, managed shifts, and handled shipping/receiving processes.'
+                ],
+                icon: '☕',
+                details: `
+                    Applicable Skills:
+                    - Resource Allocation, Employee Training, Strategic Planning.
+                    - Cash Management, Critical Thinking, and Time Management.`
+            },
+            {
+                type: 'work',
+                title: 'Professional Assistant',
+                company: 'Tremper High School | Internship',
+                period: 'September 2019 - March 2020',
+                description: [
+                    'Managed project timelines and deliverables for senior elective classes in the Drama Department.',
+                    'Organized files, graded assignments, and ensured confidentiality.',
+                    'Responded to emails efficiently, supporting teaching aid roles.'
+                ],
+                icon: '🗂️',
+                details: `
+                    Applicable Skills:
+                    - Project Management, Ethical Decision-Making, Time Efficiency.
+                    - Attention to Detail, Computer Literacy, and Organizational Skills.`
+            },
+            {
+                type: 'work',
+                title: 'Customer Service Specialist',
+                company: 'Target | Part-time',
+                period: 'April 2019 - March 2020',
+                description: [
+                    'Provided exceptional customer service by resolving inquiries and ensuring satisfaction.',
+                    'Managed high-volume calls and emails, meeting response and resolution performance metrics.',
+                    'Demonstrated strong product knowledge and built rapport with customers.'
+                ],
+                icon: '🎯',
+                details: `
+                    Applicable Skills:
+                    - Critical Thinking, Customer Service, Microsoft Office.
+                    - Analytical Skills, Communication, and Time Efficiency.`
+            },
+            {
+                type: 'work',
+                title: 'Farm Assistant',
+                company: 'JERRY SMITH | Seasonal',
+                period: 'September 2018 - November 2019',
+                description: [
+                    'Assisted with product marketing, inventory management, and cash handling.',
+                    'Fostered inclusive team collaboration to meet seasonal targets.',
+                    'Maintained workplace safety and operational efficiency.'
+                ],
+                icon: '🌾',
+                details: `
+                    Applicable Skills:
+                    - Retail Sales, Collaborative Problem Solving, Inventory Control.
+                    - Time Management, Attention to Detail, and Workplace Safety.`
+            },
+            {
+                type: 'work',
+                title: 'Retail Salesworker',
+                company: 'Tommy Hilfiger | Part-time',
+                period: 'October 2018 - March 2019',
+                description: [
+                    'Handled accurate cash transactions and managed customer purchases efficiently.',
+                    'Conducted inventory verification and implemented asset protection measures.',
+                    'Created a welcoming shopping environment to drive sales and customer satisfaction.'
+                ],
+                icon: '🛍️',
+                details: `
+                    Applicable Skills:
+                    - Product Marketing, Cash Handling, Business Analytics.
+                    - Communication, Inventory Control, and Sales Optimization.`
+            },
+            {
+                type: 'work',
+                title: 'Shift Team Lead',
+                company: 'The Wendy\'s Company',
+                period: 'November 2016 - May 2020',
+                description: [
+                    'Trained new hires on cooking techniques and ensured consistent quality standards.',
+                    'Managed inventory levels, food costs, and sanitation audits.',
+                    'Oversaw kitchen organization and compliance with health and safety regulations.'
+                ],
+                icon: '🍔',
+                details: `
+                    Applicable Skills:
+                    - Leadership, Team Management, Inventory Control.
+                    - Workplace Safety, Microsoft Office, and Problem Solving.`
+            },
+            {
+                type: 'work',
+                title: 'Store Cashier',
+                company: 'Piggly Wiggly Midwest',
+                period: 'March 2017 - August 2017',
+                description: [
+                    'Managed cash drops, counted drawers, and ensured transaction accuracy.',
+                    'Provided excellent customer service at store counters, including lottery counters.',
+                    'Maintained clean and organized workspaces to uphold company standards.'
+                ],
+                icon: '💵',
+                details: `
+                    Applicable Skills:
+                    - Cashiering, Resource Allocation, Attention to Detail.
+                    - Inventory Control, Customer Service, and Computer Literacy.`
+            },
+
+            // EDUCATION & CERTIFICATIONS
+            {
+                type: 'education',
+                title: 'Bachelor of Science in Psychology, Minor in Sociology',
+                company: 'University of Wisconsin-Parkside',
+                period: 'Expected Graduation: May 2025',
+                description: [
+                    'Current Cumulative GPA: 3.737/4.00 (Spring 2024)',
+                    'Honors: Dean\'s List (7x) | Provost\'s List (6x)',
+                    'Certificate: Psychological Research Distinction (200+ hours in university neuroscience lab).'
+                ],
+                icon: '🎓',
+                details: `
+                    Relevant Coursework:
+                    - **Psychology**: Psychopharmacology, Abnormal Psychology, Intro to Neuroscience, Theories of Psychotherapy, Psychological Statistics, Psychological Research Methods, Behavioral Psychology, Psychological Assessment, and Interviewing.
+                    - **Sociology**: Sociological Psychology, Juvenile Delinquency, Formal Organizations, Police in Society, and Corrections.
+                    Clubs & Organizations: Sociology Club (2024), Debate Club (2021), Psychology Club (2021).`
+            },
+            {
+                type: 'certification',
+                title: 'Self-Acquired Certifications in Programming and Coding',
+                company: 'Various Platforms',
+                period: '2021 - 2024',
+                description: [
+                    'Python for Everybody Specialization (Coursera): Proficient in Python programming, including data structures, web scraping, and database management.',
+                    'Machine Learning Fundamentals by Google: Practical experience producing ML models, deploying in Google Cloud, and using supervised and unsupervised techniques.'
+                ],
+                icon: '💻',
+                details: 'Enhanced programming and machine learning skills applicable across cognitive research, data analysis, and AI development.'
+            }
+        ];
+
+        // Timeline functionality
+        class Timeline {
+            constructor(data) {
+                this.data = data;
+                this.filters = new Set(data.map(item => item.type));
+                this.activeFilters = new Set(this.filters);
+                this.init();
+            }
+
+            init() {
+                this.renderFilters();
+                this.renderTimeline();
+                this.setupIntersectionObserver();
+                this.setupEventListeners();
+            }
+
+            renderFilters() {
+                const filtersContainer = document.getElementById('filters');
+                const allButton = document.createElement('button');
+                allButton.className = 'filter-btn active';
+                allButton.textContent = 'All';
+                allButton.dataset.filter = 'all';
+                filtersContainer.appendChild(allButton);
+
+                this.filters.forEach(filter => {
+                    const button = document.createElement('button');
+                    button.className = 'filter-btn';
+                    button.textContent = this.capitalizeFirstLetter(filter);
+                    button.dataset.filter = filter;
+                    filtersContainer.appendChild(button);
+                });
+            }
+
+            renderTimeline() {
+                const timelineContainer = document.getElementById('timeline');
+                timelineContainer.innerHTML = '';
+
+                this.data
+                    .filter(item => this.activeFilters.has(item.type))
+                    .forEach(item => {
+                        const timelineItem = this.createTimelineItem(item);
+                        timelineContainer.appendChild(timelineItem);
+                    });
+            }
+
+            createTimelineItem(item) {
+                const div = document.createElement('div');
+                div.className = 'timeline-item';
+                div.dataset.type = item.type;
+
+                div.innerHTML = `
+                    <div class="timeline-icon">${item.icon}</div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">${item.period}</div>
+                        <div class="timeline-title">${item.title}</div>
+                        <div class="timeline-company">${item.company}</div>
+                        <div class="timeline-description">
+                            <ul>
+                                ${item.description.map(desc => `<li>${desc}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="timeline-details">${item.details}</div>
+                    </div>
+                `;
+
+                return div;
+            }
+
+            setupIntersectionObserver() {
+                const options = {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.1
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                        }
+                    });
+                }, options);
+
+                document.querySelectorAll('.timeline-item').forEach(item => {
+                    observer.observe(item);
+                });
+            }
+
+            setupEventListeners() {
+                document.getElementById('filters').addEventListener('click', (e) => {
+                    if (e.target.classList.contains('filter-btn')) {
+                        const filter = e.target.dataset.filter;
+                        this.handleFilterClick(filter, e.target);
+                    }
+                });
+            }
+
+            handleFilterClick(filter, button) {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+
+                if (filter === 'all') {
+                    this.activeFilters = new Set(this.filters);
+                } else {
+                    this.activeFilters = new Set([filter]);
+                }
+
+                this.renderTimeline();
+                this.setupIntersectionObserver();
+            }
+
+            capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+        }
+
+        // Initialize timeline when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new Timeline(careerData);
+        });
+    </script>
+</body>
+</html>
